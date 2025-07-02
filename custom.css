@@ -1,0 +1,25 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+.bg-page {
+  background-color: #e3e1e1ce;
+  color: #333;
+}
+.bg-menu-item {
+  color: #ffffff;
+  padding: 8px 10px;
+}
+.bg-menu-item:hover {
+  background-color: #cac6c672;
+  border-radius: 4px;
+  color: #000;
+}
+.text-small {
+  font-size: 0.8rem;
+}
+.bg-blueBg {
+  background-color: #007bffa1 !important;
+}
