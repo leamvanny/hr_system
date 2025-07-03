@@ -83,7 +83,8 @@ include "./controller.php";
                                     <span class="text-small">Total number of salary</span>
                                     <h4 class="fw-bold text-primary mt-2">
                                         <?php
-                                        $sql = "SELECT SUM(base_salary) AS total_salary FROM salaries";
+                                        $sql = "SELECT SUM(s.base_salary) AS total_salary FROM salaries s
+                                                JOIN employees e ON s.salary_id = e.salary_id";
                                         $result = $conn->query($sql);
                                         if ($result && $row = $result->fetch_assoc()) {
                                             echo formatSalaryShort($row['total_salary'], 2);
@@ -105,7 +106,9 @@ include "./controller.php";
                                     <span class="text-small">Total number of avg. salary</span>
                                     <h4 class="fw-bold text-primary mt-2">
                                         <?php
-                                        $sql = "SELECT AVG(base_salary) AS average_salary FROM salaries";
+                                        // $sql = "SELECT AVG(base_salary) AS average_salary FROM salaries";
+                                        $sql = "SELECT AVG(s.base_salary) AS average_salary FROM salaries s
+                                                JOIN employees e ON s.salary_id = e.salary_id";
                                         $result = $conn->query($sql);
                                         if ($result && $row = $result->fetch_assoc()) {
                                             echo formatSalaryShort($row['average_salary'], 2);

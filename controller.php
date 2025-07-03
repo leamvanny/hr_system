@@ -60,13 +60,14 @@ $queryJopPositionsJoin = "SELECT e.*, j.job_position
 
 
 // === Employee Registration ===
-$emp_name = $emp_mail = $emp_phone = $hire_date = $job_position = $department = $salary = $check_in = $check_out = $dob = "";
+$emp_id = $emp_name = $emp_mail = $emp_phone = $hire_date = $job_position = $department = $salary = $check_in = $check_out = $dob = "";
 $emp_name_err = $emp_mail_err = $emp_phone_err = $hire_date_err = "";
 $success_msg = $error_msg = "";
 
 
 
 if (isset($_POST['btn_submit'])) {
+    $emp_id = trim($_POST['emp_id']);
     $emp_name = trim($_POST['emp_name']);
     $emp_gender = trim($_POST['gender']);
     $dob = trim($_POST['dob']);
@@ -112,8 +113,8 @@ if (isset($_POST['btn_submit'])) {
 
     // === INSERT DATA ===
     if (empty($emp_name_err) && empty($emp_mail_err) && empty($emp_phone_err) && empty($hire_date_err)) {
-        $sql = "INSERT INTO employees (`full_name`, `dob`, `gender`, `email`, `phone`, `hire_date`, `department_id`, `position_id`, `salary_id`, `role_id`) 
-        VALUES ('$emp_name', '$dob', '$emp_gender', '$emp_mail', '$emp_phone', '$hire_date', '$department_id', '$position_id', '$salary_id', '$role_id')";
+        $sql = "INSERT INTO employees (`emp_id`, `full_name`, `dob`, `gender`, `email`, `phone`, `hire_date`, `department_id`, `position_id`, `salary_id`, `role_id`) 
+        VALUES ('$emp_id', '$emp_name', '$dob', '$emp_gender', '$emp_mail', '$emp_phone', '$hire_date', '$department_id', '$position_id', '$salary_id', '$role_id')";
 
         if ($conn->query($sql) === TRUE) {
             $success_msg = "New department created successfully.";
@@ -146,11 +147,19 @@ if (isset($_POST['btn_create_attendance'])) {
     $check_in = $_POST['check_in'];
     $check_out = $_POST['check_out'];
 
-    $sql = "INSERT INTO attendances (`emp_name`, `check_in`, `check_out`) VALUES ('$select_emp', '$check_in', '$check_out')";
-    if ($conn->query($sql) === TRUE) {
-        $success_msg = "New department created successfully.";
+    $today = date('Y-m-d', strtotime($check_in));
+
+    $check = $conn->query("SELECT * FROM attendances WHERE emp_name = '$select_emp' AND DATE(check_in) = '$today'");
+
+    if ($check->num_rows === 0) {
+        $sql = "INSERT INTO attendances (`emp_name`, `check_in`, `check_out`) VALUES ('$select_emp', '$check_in', '$check_out')";
+        if ($conn->query($sql) === TRUE) {
+            $success_msg = "New department created successfully.";
+        } else {
+            $error_msg = "Error: " . $conn->error;
+        }
     } else {
-        $error_msg = "Error: " . $conn->error;
+        $error_msg = "This employee already checked in today.";
     }
 }
 

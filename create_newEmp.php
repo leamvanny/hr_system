@@ -50,6 +50,10 @@ include "./controller.php";
                                     <p class="text-center">Please fill in the form below to register a new employee.</p>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="emp_id" class="form-label">Employee's ID</label>
+                                    <input type="text" class="form-control" id="emp_id" name="emp_id" placeholder="EMP-001">
+                                </div>
+                                <div class="mb-3">
                                     <label for="emp_name" class="form-label">Name<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="emp_name" name="emp_name" placeholder="Alex Sok" required>
                                 </div>
@@ -173,14 +177,13 @@ include "./controller.php";
                                     while ($row = $result->fetch_assoc()) {
                                         echo "<tr>";
                                         echo "<td style='font-size: 14px;'>" . $count++ . "</td>";
-                                        echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['full_name']) . "</td>";
+                                        echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['full_name']) . "</br>" . "<span class='text-secondary' style='font-size: 12px;'>" . htmlspecialchars($row['emp_id']) . "</span>" . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars(date("d M Y", strtotime($row['dob']))) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['gender']) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['email']) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['phone']) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['department_name']) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['job_position']) . "</td>";
-                                        // Change this line to display base_salary
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars(number_format($row['base_salary'], 2)) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['role_name']) . "</td>";
                                         echo "<td style='font-size: 14px;'>" . htmlspecialchars(date("d M Y", strtotime($row['hire_date']))) . "</td>";

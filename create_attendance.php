@@ -65,18 +65,10 @@ include "./controller.php";
                                         <label for="check_out" class="form-label">Check Out<span class="text-danger">*</span></label>
                                         <input type="datetime-local" class="form-control" id="check_out" name="check_out" required>
                                     </div>
-
                                     <button type="submit" name="btn_create_attendance" class="btn btn-primary">Submit</button>
                                 </form>
 
-                                <?php
-                                if (!empty($success_msg)) {
-                                    echo "<div class='alert alert-success mt-3'>$success_msg</div>";
-                                }
-                                if (!empty($error_msg)) {
-                                    echo "<div class='alert alert-danger mt-3'>$error_msg</div>";
-                                }
-                                ?>
+
                             </div>
                         </div>
                     </div>
@@ -107,7 +99,7 @@ include "./controller.php";
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo "<tr><td colspan='4' class='text-center'>No attendance records found.</td></tr>";
+                                    echo "<tr><td colspan='5' class='text-center' style='font-size: 14px;'>No attendance records found.</td></tr>";
                                 }
                                 ?>
                             </tbody>
