@@ -2,6 +2,7 @@
 include './config.php';
 
 // === LOGIN ===
+
 if (isset($_POST['btn_login'])) {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -9,10 +10,13 @@ if (isset($_POST['btn_login'])) {
     if (empty($username) || empty($password)) {
         $error_msg = "Please enter both username and password.";
     } else {
+        // Escape inputs to avoid SQL injection
+        $username_safe = $conn->real_escape_string($username);
+        $password_safe = $conn->real_escape_string($password);
         $sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
         $result = $conn->query($sql);
 
-        if ($result->num_rows > 0) {
+        if ($result && $result->num_rows > 0) {
             session_start();
             $_SESSION['username'] = $username;
             header("Location: home.php");
