@@ -16,6 +16,7 @@ include "./controller.php";
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chart.js plugin for number on bars -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="./helper.js"></script>
 
     <style>
         .bg-menu-item-active {
@@ -26,13 +27,12 @@ include "./controller.php";
         }
     </style>
 
-
 </head>
 
 <body>
     <div class="container-fluid bg-page">
         <div class="row">
-            <div class="col-md-2 bg-primary text-white">
+            <div class="col-md-2 bg-primary text-white" id="sidebar">
                 <div class="sticky-top">
                     <?php
 
@@ -40,7 +40,7 @@ include "./controller.php";
                     ?>
                 </div>
             </div>
-            <div class="col-md-10 p-0">
+            <div class="col-md-10 p-0" id="topbar">
                 <div class="sticky-top">
                     <?php
                     include "./navBar.php";

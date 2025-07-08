@@ -23,7 +23,7 @@
 
     <div class="container-fluid bg-page">
         <div class="row">
-            <div class="col-md-2 bg-primary text-white">
+            <div class="col-md-2 bg-primary text-white" id="sidebar">
                 <div class="sticky-top">
                     <?php
 
@@ -31,7 +31,7 @@
                     ?>
                 </div>
             </div>
-            <div class="col-md-10 p-0">
+            <div class="col-md-10 p-0" id="topbar">
                 <div class="sticky-top">
                     <?php
                     include "./navBar.php";
