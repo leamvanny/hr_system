@@ -80,8 +80,36 @@
                                         echo "<td>" . $count++ . "</td>";
                                         echo "<td>" . htmlspecialchars($row['job_position']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['job_description']) . "</td>";
-                                        echo "<td style='font-size: 14px;'><a href='edit_job_title.php?id=" . $row['position_id'] . "' class='text-primary'><i class='fa-solid fa-pen-to-square'></i></a>  <a href='delete_job_title.php?id=" . $row['position_id'] . "' class='text-danger'><i class='fa-solid fa-trash'></i></a></td>";
+                                        echo "<td style='font-size: 14px;'> 
+                                                <a href='./update_job_title.php?editJobTitle=" . $row['position_id'] . "' class='text-primary'><i class='fa-solid fa-pen-to-square'></i></a>
+                                                <a href='#' class='text-danger' data-bs-toggle='modal' data-bs-target='#modal_" . $row['position_id'] . "'>
+                                                    <i class='fa-solid fa-trash'></i>
+                                                </a>
+
+                                            
+                                            </td>";
                                         echo "</tr>";
+                                        // individual modal per employee
+                                        echo "<div class='modal fade' id='modal_" . $row['position_id'] . "' tabindex='-1' aria-labelledby='modalLabel_" . $row['position_id'] . "' aria-hidden='true'>";
+                                        echo "<div class='modal-dialog'>";
+                                        echo "<div class='modal-content'>";
+                                        echo "<div class='modal-header'>";
+                                        echo "<h1 class='modal-title text-danger' id='modalLabel_" . $row['position_id'] . "' style='font-size: 16px;'><i class='fa-solid fa-trash'></i> <span>Are you sure?</span></h1>";
+                                        echo "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>";
+                                        echo "</div>";
+                                        echo "<div class='modal-body'>";
+                                        echo "<p style='font-size: 14px;'>If you delete this job position, all their data will be permanently removed from the system. This action cannot be undone.</p>";
+                                        echo "</div>";
+                                        echo "<div class='modal-footer'>";
+                                        echo "<form method='POST'>";
+                                        echo "<input type='hidden' name='deleteJobTitle_id' value='" . $row['position_id'] . "'>";
+                                        echo "<button type='button' class='btn btn-danger' data-bs-dismiss='modal'>No</button>";
+                                        echo "<button type='submit' class='btn btn-primary' name='btn_deleteJobTitle'>Yes</a>";
+                                        echo "</form>";
+                                        echo "</div>";
+                                        echo "</div>";
+                                        echo "</div>";
+                                        echo "</div>";
                                     }
                                 } else {
                                     echo "<tr><td colspan='4' class='text-center'>No job titles found.</td></tr>";

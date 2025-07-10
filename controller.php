@@ -181,15 +181,23 @@ if ($result->num_rows > 0) {
 
 //==== Job Title ====
 $job_title = $job_description = "";
+
 if (isset($_POST['btn_create_job_title'])) {
     $job_title = $_POST['job_title'];
     $job_description = $_POST['job_description'];
 
-    $sql = "INSERT INTO jobs (`job_position`, `job_description`) VALUES ('$job_title', '$job_description')";
-    if ($conn->query($sql) === TRUE) {
-        $success_msg = "New job title created successfully.";
+    $checkSql = "SELECT * FROM jobs WHERE job_position = '$job_title'";
+    $checkResult = $conn->query($checkSql);
+
+    if ($checkResult && $checkResult->num_rows > 0) {
+        $error_msg = "Job title already exists.";
     } else {
-        $error_msg = "Error: " . $conn->error;
+        $sql = "INSERT INTO jobs (`job_position`, `job_description`) VALUES ('$job_title', '$job_description')";
+        if ($conn->query($sql) === TRUE) {
+            $success_msg = "New job title created successfully.";
+        } else {
+            $error_msg = "Error: " . $conn->error;
+        }
     }
 }
 
@@ -316,5 +324,337 @@ while ($row = $resultRole->fetch_assoc()) {
         $managerCount = $total;
     } else {
         $employeeCount += $total; // Count any other roles as default employee
+    }
+}
+
+
+
+
+
+// === Update and Delete Employee ===
+$edit_id = "";
+$edit_data = [];
+
+if (isset($_GET['edit_id'])) {
+    $edit_id = $_GET['edit_id'];
+    $sql = "SELECT * FROM employees WHERE emp_id='$edit_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $edit_data = mysqli_fetch_assoc($result);
+    }
+}
+
+$newEmp_id = $newEmp_name = $newEmp_mail = $newEmp_phone = $newHire_date = $new_position = $newDepartment = "";
+$new_salary = null;
+if (isset($_POST['btn_update'])) {
+    $newEmp_id = $_POST['newEmp_id'];
+    $newEmp_name = trim($_POST['newEmp_name']);
+    $newEmp_mail = trim($_POST['newEmp_mail']);
+    $newEmp_phone = trim($_POST['newEmp_phone']);
+    $newHire_date = trim($_POST['newHire_date']);
+    $new_position = $_POST['new_position'];
+    $newDepartment = $_POST['newDepartment'];
+    $new_salary = $_POST['new_salary'];
+    $newRole_id = $_POST['newRole_id'];
+
+    // === VALIDATIONS ===
+    if (empty($newEmp_name)) {
+        $error_msg = "Please enter a name.";
+    } elseif (empty($newEmp_mail)) {
+        $error_msg = "Please enter an email.";
+    } elseif (!filter_var($newEmp_mail, FILTER_VALIDATE_EMAIL)) {
+        $error_msg = "Please enter a valid email address.";
+    } elseif (empty($newEmp_phone)) {
+        $error_msg = "Please enter a phone number.";
+    } elseif (!preg_match('/^[0-9]{8,15}$/', $newEmp_phone)) {
+        $error_msg = "Phone number must be between 8 to 15 digits.";
+    } elseif (empty($newHire_date)) {
+        $error_msg = "Please enter a hire date.";
+    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $newHire_date)) {
+        $error_msg = "Invalid date format.";
+    } elseif (strtotime($newHire_date) > time()) {
+        $error_msg = "Hire date cannot be in the future.";
+    }
+
+    // === UPDATE DATA ===
+    if (empty($error_msg)) {
+        $sqlUpdate = "UPDATE employees SET 
+            full_name='$newEmp_name', 
+            email='$newEmp_mail', 
+            phone='$newEmp_phone', 
+            hire_date='$newHire_date', 
+            position_id='$new_position', 
+            department_id='$newDepartment', 
+            salary_id='$new_salary',
+            role_id='$newRole_id'
+            WHERE emp_id='$newEmp_id'";
+
+        if ($conn->query($sqlUpdate) === TRUE) {
+            header("Location: create_newEmp.php");
+            exit();
+        } else {
+            $error_msg = "Error updating record: " . $conn->error;
+        }
+    }
+}
+
+// === Delete Employee ===
+if (isset($_GET['delete_id'])) {
+    $delete_id = $_GET['delete_id'];
+    $sqlDelete = "DELETE FROM employees WHERE emp_id='$delete_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_newEmp.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+if (isset($_POST['btn_delete'])) {
+    $delete_id = $_POST['delete_id'];
+    $sqlDelete = "DELETE FROM employees WHERE emp_id='$delete_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_newEmp.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+
+
+
+// === Update and Delete Department ===
+$edit_department_id = "";
+$edit_department_data = [];
+if (isset($_GET['edit_department_id'])) {
+    $edit_department_id = $_GET['edit_department_id'];
+    $sql = "SELECT * FROM departments WHERE department_id='$edit_department_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $edit_department_data = mysqli_fetch_assoc($result);
+    }
+}
+$newDepartment_code = $newDepartment_name = $newDepartment_color_code = "";
+if (isset($_POST['btn_updateDepartment'])) {
+    $newDepartment_code = $_POST['newDepartment_code'];
+    $newDepartment_name = trim($_POST['newDepartment_name']);
+    $newDepartment_color_code = $_POST['newDepartment_color_code'];
+    $newDepartment_id = $_POST['newDepartment_id'];
+    // === VALIDATIONS ===
+    if (empty($newDepartment_code)) {
+        $error_msg = "Please enter a department code.";
+    } elseif (empty($newDepartment_name)) {
+        $error_msg = "Please enter a department name.";
+    } elseif (empty($newDepartment_color_code)) {
+        $error_msg = "Please select a color code.";
+    } elseif (!preg_match('/^[A-Z]{2}-\d{2}$/', $newDepartment_code)) {
+        $error_msg = "Department code must be in the format 'XX-YY'.";
+    }
+
+    if (!empty($newDepartment_code) && !empty($newDepartment_name) && !empty($newDepartment_color_code)) {
+        // === UPDATE DATA ===
+        $sqlUpdate = "UPDATE departments SET 
+            department_code='$newDepartment_code', 
+            department_name='$newDepartment_name', 
+            department_color_code='$newDepartment_color_code' 
+            WHERE department_id='$newDepartment_id'";
+
+        if ($conn->query($sqlUpdate) === TRUE) {
+            header("Location: create_department.php");
+            exit();
+        } else {
+            $error_msg = "Error updating record: " . $conn->error;
+        }
+    }
+}
+// === Delete Department ===
+if (isset($_GET['deleteDeprtment_id'])) {
+    $deleteDeprtment_id = $_GET['deleteDeprtment_id'];
+    $sqlDelete = "DELETE FROM departments WHERE department_code='$deleteDeprtment_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_department.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+if (isset($_POST['btn_deleteDepartment'])) {
+    $deleteDeprtment_id = $_POST['deleteDeprtment_id'];
+    $sqlDelete = "DELETE FROM departments WHERE department_id='$deleteDeprtment_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_department.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+
+// === Update and Delete Attendance ===
+
+$edit_attendance_id = "";
+$edit_attendance_data = [];
+if (isset($_GET['edit'])) {
+    $edit_attendance_id = $_GET['edit'];
+    $sql = "SELECT * FROM attendances WHERE id='$edit_attendance_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $edit_attendance_data = mysqli_fetch_assoc($result);
+    }
+}
+$newAttendance_emp_name = $newAttendance_check_in = $newAttendance_check_out = "";
+if (isset($_POST['btn_updateAttendance'])) {
+    $newAttendance_emp_name = $_POST['newSelect_emp'];
+    $newAttendance_check_in = $_POST['newCheck_in'];
+    $newAttendance_check_out = $_POST['newCheck_out'];
+    $newAttendance_id = $_POST['newAttendance_id'];
+    // === VALIDATIONS ===
+    if (empty($newAttendance_emp_name)) {
+        $error_msg = "Please select an employee.";
+    } elseif (empty($newAttendance_check_in)) {
+        $error_msg = "Please enter a check-in time.";
+    } elseif (empty($newAttendance_check_out)) {
+        $error_msg = "Please enter a check-out time.";
+    } elseif (strtotime($newAttendance_check_in) >= strtotime($newAttendance_check_out)) {
+        $error_msg = "Check-out time must be after check-in time.";
+    }
+
+    if (!empty($newAttendance_emp_name) && !empty($newAttendance_check_in) && !empty($newAttendance_check_out)) {
+        // === UPDATE DATA ===
+        $sqlUpdate = "UPDATE attendances SET 
+            emp_name='$newAttendance_emp_name', 
+            check_in='$newAttendance_check_in', 
+            check_out='$newAttendance_check_out' 
+            WHERE id='$newAttendance_id'";
+
+        if ($conn->query($sqlUpdate) === TRUE) {
+            header("Location: create_attendance.php");
+            exit();
+        } else {
+            $error_msg = "Error updating record: " . $conn->error;
+        }
+    }
+}
+
+// === Delete Attendance ===
+
+if (isset($_POST['btn_deleteAttendance'])) {
+    $deleteAttendance_id = $_POST['deleteAttendance_id'];
+    $sqlDelete = "DELETE FROM attendances WHERE id='$deleteAttendance_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_attendance.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+
+// === Update and Delete Job Title ===
+$editJobTitle_id = "";
+$editJobTitle_data = [];
+if (isset($_GET['editJobTitle'])) {
+    $editJobTitle_id = $_GET['editJobTitle'];
+    $sql = "SELECT * FROM jobs WHERE position_id='$editJobTitle_id'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $editJobTitle_data = mysqli_fetch_assoc($result);
+    }
+}
+$newJob_title = $newJob_description = "";
+if (isset($_POST['btn_UpdateJob'])) {
+    $newJob_title = $_POST['newJob_title'];
+    $newJob_description = $_POST['newJob_description'];
+    $newJobTitle_id = $_POST['newJobTitle_id'];
+    // === VALIDATIONS ===
+    if (empty($newJob_title)) {
+        $error_msg = "Please enter a job title.";
+    } elseif (empty($newJob_description)) {
+        $error_msg = "Please enter a job description.";
+    }
+
+    if (!empty($newJob_title) && !empty($newJob_description)) {
+        // === UPDATE DATA ===
+        $sqlUpdate = "UPDATE jobs SET 
+            job_position='$newJob_title', 
+            job_description='$newJob_description' 
+            WHERE position_id='$newJobTitle_id'";
+
+        if ($conn->query($sqlUpdate) === TRUE) {
+            header("Location: create_job_title.php");
+            exit();
+        } else {
+            $error_msg = "Error updating record: " . $conn->error;
+        }
+    }
+}
+
+// === Delete Job Title ===
+if (isset($_POST['btn_deleteJobTitle'])) {
+    $deleteJobTitle_id = $_POST['deleteJobTitle_id'];
+    $sqlDelete = "DELETE FROM jobs WHERE position_id='$deleteJobTitle_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_job_title.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
+    }
+}
+
+
+// === Update and Delete Salary ===
+$editSalary_id = "";
+$editSalary_data = [];
+if (isset($_GET['edit_salary'])) {
+    $editSalary_id = $_GET['edit_salary'];
+    $sql = "SELECT * FROM salaries WHERE salary_id='$editSalary_id'";
+    $result = mysqli_query($conn, $sql);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $editSalary_data = mysqli_fetch_assoc($result);
+    }
+}
+$newSalary = $newSalaryDescription = "";
+if (isset($_POST['btn_updateSalary'])) {
+    $newSalary = $_POST['newSalary'];
+    $newSalaryDescription = $_POST['newSalaryDescription'];
+    $newSalary_id = $_POST['newSalary_id'];
+    // === VALIDATIONS ===
+    if (empty($newSalary)) {
+        $error_msg = "Please enter a salary amount.";
+    } elseif (!is_numeric($newSalary) || $newSalary <= 0) {
+        $error_msg = "Salary must be a positive number.";
+    }
+
+    if (!empty($newSalary)) {
+        // === UPDATE DATA ===
+        $sqlUpdate = "UPDATE salaries SET 
+            base_salary='$newSalary', 
+            salary_description='$newSalaryDescription' 
+            WHERE salary_id='$newSalary_id'";
+
+        if ($conn->query($sqlUpdate) === TRUE) {
+            header("Location: create_salaries.php");
+            exit();
+        } else {
+            $error_msg = "Error updating record: " . $conn->error;
+        }
+    }
+}
+
+// === Delete Salary ===
+if (isset($_POST['btn_deleteSalary'])) {
+    $deleteSalary_id = $_POST['deleteSalary_id'];
+    $sqlDelete = "DELETE FROM salaries WHERE salary_id='$deleteSalary_id'";
+    if ($conn->query($sqlDelete) === TRUE) {
+        header("Location: create_salaries.php");
+        exit();
+    } else {
+        $error_msg = "Error deleting record: " . $conn->error;
     }
 }

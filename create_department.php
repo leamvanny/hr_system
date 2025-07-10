@@ -54,6 +54,7 @@
                                     <div class="mb-3">
                                         <label for="department_color_code" class="form-label">Color Code<span class="text-danger">*</span></label>
                                         <div style="width: 50px;">
+                                            <!-- <input type="search" name="display" id=""> -->
                                             <input type="color" class="form-control" value="#ff0000" id="department_color_code" name="department_color_code" required>
                                         </div>
                                     </div>
@@ -78,6 +79,7 @@
 
                             <thead class="table-dark">
                                 <tr>
+                                    <th>No.</th>
                                     <th>Code</th>
                                     <th>Department Name</th>
                                     <th>Color Code</th>
@@ -92,10 +94,40 @@
                                 while ($row = $departments->fetch_assoc()) {
                                     echo "<tr>";
                                     echo "<td style='font-size: 14px;'>" . $count++  . "</td>";
+                                    echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['department_code']) . "</td>";
                                     echo "<td style='font-size: 14px;'>" . htmlspecialchars($row['department_name']) . "</td>";
                                     echo "<td style='font-size: 14px;'><span style='display:inline-block;width:20px;height:20px;background-color:" . htmlspecialchars($row['department_color_code']) . ";'></span> " . htmlspecialchars($row['department_color_code']) . "</td>";
-                                    echo "<td style='font-size: 14px;'><a href='edit_department.php?id=" . $row['department_id'] . "' class='text-primary'><i class='fa-solid fa-pen-to-square'></i></a>  <a href='delete_department.php?id=" . $row['department_id'] . "' class='text-danger'><i class='fa-solid fa-trash'></i></a></td>";
+                                    echo "<td style='font-size: 14px;'>
+                                    <a href='./update_department.php?edit_department_id=" . $row['department_id'] . "' class='text-primary'><i class='fa-solid fa-pen-to-square'></i></a>  
+                                    <a href='#' class='text-danger' data-bs-toggle='modal' data-bs-target='#modal_" . $row['department_id'] . "'>
+                                                    <i class='fa-solid fa-trash'></i>
+                                                </a>
+                                    
+                                    </td>";
+
                                     echo "</tr>";
+
+                                    // individual modal per employee
+                                    echo "<div class='modal fade' id='modal_" . $row['department_id'] . "' tabindex='-1' aria-labelledby='modalLabel_" . $row['department_id'] . "' aria-hidden='true'>";
+                                    echo "<div class='modal-dialog'>";
+                                    echo "<div class='modal-content'>";
+                                    echo "<div class='modal-header'>";
+                                    echo "<h1 class='modal-title text-danger' id='modalLabel_" . $row['department_id'] . "' style='font-size: 16px;'><i class='fa-solid fa-trash'></i> <span>Are you sure?</span></h1>";
+                                    echo "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>";
+                                    echo "</div>";
+                                    echo "<div class='modal-body'>";
+                                    echo "<p style='font-size: 14px;'>If you delete this department, all their data will be permanently removed from the system. This action cannot be undone.</p>";
+                                    echo "</div>";
+                                    echo "<div class='modal-footer'>";
+                                    echo "<form method='POST'>";
+                                    echo "<input type='hidden' name='deleteDeprtment_id' value='" . $row['department_id'] . "'>";
+                                    echo "<button type='button' class='btn btn-danger' data-bs-dismiss='modal'>No</button>";
+                                    echo "<button type='submit' class='btn btn-primary' name='btn_deleteDepartment'>Yes</a>";
+                                    echo "</form>";
+                                    echo "</div>";
+                                    echo "</div>";
+                                    echo "</div>";
+                                    echo "</div>";
                                 }
                                 ?>
                             </tbody>
